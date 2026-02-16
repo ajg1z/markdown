@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Markdown Editor Demo</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f5f5f5;
+        padding: 20px;
+      }
+
+      .editor-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+      }
+
+      .toolbar {
+        display: flex;
+        gap: 8px;
+        padding: 12px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+        flex-wrap: wrap;
+      }
+
+      .toolbar button {
+        padding: 8px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+        transition: all 0.2s;
+      }
+
+      .toolbar button:hover {
+        background: #f0f0f0;
+        border-color: #999;
+      }
+
+      .toolbar button:active {
+        background: #e0e0e0;
+      }
+
+      .toolbar .separator {
+        width: 1px;
+        background: #ddd;
+        margin: 0 4px;
+      }
+
+      .toolbar .mode-toggle {
+        margin-left: auto;
+      }
+
+      .toolbar .mode-toggle.active {
+        background: #646cff;
+        color: white;
+        border-color: #646cff;
+      }
+
+      .editor {
+        width: 100%;
+        min-height: 500px;
+        padding: 20px;
+        border: none;
+        outline: none;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        resize: vertical;
+        display: block;
+      }
+
+      .editor.hidden {
+        display: none;
+      }
+
+      .preview {
+        width: 100%;
+        min-height: 500px;
+        padding: 20px;
+        font-size: 14px;
+        line-height: 1.6;
+        overflow-y: auto;
+        display: none;
+      }
+
+      .preview.visible {
+        display: block;
+      }
+
+      .preview h1,
+      .preview h2,
+      .preview h3,
+      .preview h4,
+      .preview h5,
+      .preview h6 {
+        margin-top: 1em;
+        margin-bottom: 0.5em;
+        font-weight: 600;
+      }
+
+      .preview h1 {
+        font-size: 2em;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 0.3em;
+      }
+
+      .preview h2 {
+        font-size: 1.5em;
+        border-bottom: 1px solid #e0e0e0;
+        padding-bottom: 0.3em;
+      }
+
+      .preview h3 {
+        font-size: 1.25em;
+      }
+
+      .preview p {
+        margin-bottom: 1em;
+      }
+
+      .preview code {
+        background: #f4f4f4;
+        padding: 2px 6px;
+        border-radius: 3px;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9em;
+      }
+
+      .preview pre {
+        background: #f4f4f4;
+        padding: 12px;
+        border-radius: 4px;
+        overflow-x: auto;
+        margin-bottom: 1em;
+      }
+
+      .preview pre code {
+        background: none;
+        padding: 0;
+      }
+
+      .preview blockquote {
+        border-left: 4px solid #ddd;
+        padding-left: 16px;
+        margin-left: 0;
+        color: #666;
+        margin-bottom: 1em;
+      }
+
+      .preview ul,
+      .preview ol {
+        margin-bottom: 1em;
+        padding-left: 2em;
+      }
+
+      .preview li {
+        margin-bottom: 0.5em;
+      }
+
+      .preview a {
+        color: #646cff;
+        text-decoration: none;
+      }
+
+      .preview a:hover {
+        text-decoration: underline;
+      }
+
+      .preview table {
+        border-collapse: collapse;
+        width: 100%;
+        margin-bottom: 1em;
+      }
+
+      .preview th,
+      .preview td {
+        border: 1px solid #ddd;
+        padding: 8px 12px;
+        text-align: left;
+      }
+
+      .preview th {
+        background: #f8f9fa;
+        font-weight: 600;
+      }
+
+      .link-form {
+        display: none;
+        padding: 16px;
+        background: #f8f9fa;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .link-form.visible {
+        display: block;
+      }
+
+      .link-form-group {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 8px;
+      }
+
+      .link-form-group:last-child {
+        margin-bottom: 0;
+      }
+
+      .link-form input {
+        flex: 1;
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 14px;
+      }
+
+      .link-form input:focus {
+        outline: none;
+        border-color: #646cff;
+      }
+
+      .link-form-actions {
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+      }
+
+      .link-form button {
+        padding: 6px 16px;
+        border: 1px solid #ddd;
+        background: white;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 14px;
+      }
+
+      .link-form button:hover {
+        background: #f0f0f0;
+      }
+
+      .link-form button.primary {
+        background: #646cff;
+        color: white;
+        border-color: #646cff;
+      }
+
+      .link-form button.primary:hover {
+        background: #535bf2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="editor-container">
+      <div class="toolbar" id="toolbar">
+        <button data-action="bold">B</button>
+        <button data-action="italic">I</button>
+        <button data-action="code">&lt;/&gt;</button>
+        <button data-action="strikethrough">S</button>
+        <div class="separator"></div>
+        <button data-action="quote">"</button>
+        <div class="separator"></div>
+        <button data-action="unordered-list">•</button>
+        <button data-action="ordered-list">1.</button>
+        <button data-action="control-list">☑</button>
+        <button data-action="expanded-section">📁</button>
+        <button data-action="table">📊</button>
+        <div class="separator"></div>
+        <button data-action="add-link">🔗 Добавить ссылку</button>
+        <button data-action="add-image">🖼️ Добавить изображение</button>
+        <div class="separator"></div>
+        <button class="mode-toggle" data-action="toggle-mode" data-mode="editor">Редактор</button>
+        <button class="mode-toggle" data-action="toggle-mode" data-mode="preview">Preview</button>
+      </div>
+      <div class="link-form" id="link-form">
+        <div class="link-form-group">
+          <input type="text" id="link-text" placeholder="Текст ссылки" />
+        </div>
+        <div class="link-form-group">
+          <input type="url" id="link-url" placeholder="URL (https://example.com)" />
+        </div>
+        <div class="link-form-actions">
+          <button type="button" id="link-cancel">Отмена</button>
+          <button type="button" id="link-submit" class="primary">Добавить</button>
+        </div>
+      </div>
+      <div class="link-form" id="image-form">
+        <div class="link-form-group">
+          <input type="text" id="image-alt" placeholder="Альтернативный текст" />
+        </div>
+        <div class="link-form-group">
+          <input type="url" id="image-src" placeholder="URL изображения (https://example.com/image.jpg)" />
+        </div>
+        <div class="link-form-actions">
+          <button type="button" id="image-cancel">Отмена</button>
+          <button type="button" id="image-submit" class="primary">Добавить</button>
+        </div>
+      </div>
+      <textarea class="editor" id="editor" placeholder="Начните вводить текст..."></textarea>
+      <div class="preview" id="preview"></div>
+    </div>
+    <script type="module" src="./demo.ts"></script>
+  </body>
+</html>

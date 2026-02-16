@@ -1,0 +1,29 @@
+{
+  "name": "markdown",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "dev:demo": "vite --config vite.config.demo.ts",
+    "build": "tsc && vite build",
+    "build:demo": "vite build --config vite.config.demo.ts",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "test:run": "vitest run"
+  },
+  "devDependencies": {
+    "@types/markdown-it": "^14.1.2",
+    "@vitest/ui": "^4.0.18",
+    "jsdom": "^28.1.0",
+    "typescript": "~5.9.3",
+    "vite": "^7.3.1",
+    "vitest": "^4.0.18"
+  },
+  "dependencies": {
+    "markdown-it": "^14.1.1",
+    "markdown-it-collapsible": "^2.0.2",
+    "markdown-it-task-lists": "^2.1.1"
+  }
+}
