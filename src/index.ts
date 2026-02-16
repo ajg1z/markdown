@@ -1,3 +1,7 @@
 export { EditorCore } from './editor-core'
-
+export type { EditorPlugin } from './plugins/index'
 export { BaseCommand } from './commands/index'
+export { CommandRegistry } from './commands/command-registry'
+export { KeyboardManager } from './keyboard-manager'
+export { EditorController } from './editor-controller'
+export type { EditorSnapshot, EditorMode, EditorSubscriber, Selection } from './types'
